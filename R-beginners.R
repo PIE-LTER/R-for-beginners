@@ -7,16 +7,17 @@ install.packages(‘lubridate’)
 install.packages(‘ggplot2’)
 
 #### Load Packages ####
+# do this at the beginning of every R session
 library(dplyr)
 library(tidyr)
 library(lubridate)
 library(ggplot2)
 
-# set working directory
-setwd("~/R-beginners")
-
 # check working directory
 getwd()
+
+# set working directory
+setwd("~/R-beginners")
 
 # assign a variable
 x <- 10
@@ -42,40 +43,41 @@ df$V2 <- df$VAL * y
 df$V2
 df
 
-data(iris)
-
 #### data transformation ####
 # load a csv file as a dataframe
 biomass_PIE <- read.csv("Biomass_PIE.csv")
 biomass_NI <- read.csv("Biomass_NI.csv")
 
 # combine the two biomass dataframes into one
-# WARNING!!! make sure both dataframes have the same column order before you bind them - 
+# WARNING!!! make sure the columns in both dataframes are in the same order before you bind them - 
 # you could accidentally combine two columns with different types of data
 biomass <- bind_rows(biomass_PIE, biomass_NI)
 
 # you can also bind columns
 biomass_col <- bind_cols(biomass_PIE, biomass_NI)
 
-# but more useful is to use join and specify identifiers to join by
+# but more useful is to join by an identifier
 biomass_join <- full_join(x = biomass_PIE, y = biomass_NI, by = join_by(Plot))
 
-# use tidyr to put biomass df into a "tidy" format
+# convert to a "tidy" format
 ?pivot_longer
 biomass_tidy <- biomass %>% pivot_longer(AGB_Live:BGB_Dead, names_to = "Biomass_Category", values_to = "Biomass")
 
 # view first 6 rows of a dataframe
 head(biomass_tidy)
 
-# view last 6 rows of a dataframe
-tail(biomass_tidy)
-
 # view a specific row
 biomass_tidy[50,]
+
+# view several specific rows
+biomass_tidy[50:60,]
 
 # view a specific column
 biomass_tidy[,4]
 biomass_tidy$Biomass_Category
+
+# view several specific columns
+biomass_tidy[,4:5]
 
 # combine two columns
 biomass_unite <- biomass_tidy %>% unite("Datetime", Date:Time, sep = " ", remove = T)
@@ -110,7 +112,7 @@ biomass_filter <- biomass_tidy %>% filter(Biomass > 100)
 # use "&" to filter by two criteria - results will have rows that meet BOTH
 biomass_filter <- biomass_tidy %>% filter(Biomass_Category == "AGB_Live" & Biomass > 100)
 
-# use "|" to filter by two criteria - results will have rows that meet "EITHER"
+# use "|" to filter by two criteria - results will have rows that meet EITHER
 biomass_filter <- biomass_tidy %>% filter(Biomass_Category == "AGB_Live" | Biomass_Category == "AGB_Dead")
 
 # find specific rows that meet criteria
@@ -126,6 +128,7 @@ biomass_sel <- biomass_tidy %>% select(!Random_Subplot)
 write.csv(biomass_tidy, "biomass_tidy.csv", row.names = FALSE)
 
 #### statistics ####
+fiddler <- read.csv("fiddler.csv")
 
 # linear model
 fiddler_lm <- lm(Body_weight ~ Claw_weight, fiddler)
