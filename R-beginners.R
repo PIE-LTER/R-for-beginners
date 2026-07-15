@@ -122,6 +122,9 @@ biomass_sel <- biomass_tidy %>% select(Site, Plot, Biomass_Category, Biomass)
 # or use "!" to remove specific columns
 biomass_sel <- biomass_tidy %>% select(!Random_Subplot)
 
+# write new file to working directory
+write.csv(biomass_tidy, "biomass_tidy.csv", row.names = FALSE)
+
 #### statistics ####
 
 # linear model
@@ -188,4 +191,16 @@ ggplot(fiddler,
   labs(x = "Body Weight (g)", y = "Claw Weight (g)", 
        title = "Fiddler crab body vs claw weight across historical and expanded ranges") +
   theme_classic()
+
+# save plot
+fiddler_plot <- ggplot(fiddler, 
+                       aes(x = Body_weight, y = Claw_weight, color = Range)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(x = "Body Weight (g)", y = "Claw Weight (g)", 
+       title = "Fiddler crab body vs claw weight across historical and expanded ranges") +
+  theme_classic()
+
+ggsave("fiddler_plot.jpeg", plot = fiddler_plot, 
+       width = 29, height = 18, units = "cm")
 
