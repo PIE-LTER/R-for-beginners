@@ -61,7 +61,8 @@ biomass_join <- full_join(x = biomass_PIE, y = biomass_NI, by = join_by(Plot))
 
 # convert to a "tidy" format
 ?pivot_longer
-biomass_tidy <- biomass %>% pivot_longer(AGB_Live:BGB_Dead, names_to = "Biomass_Category", values_to = "Biomass")
+biomass_tidy <- biomass %>% 
+  pivot_longer(AGB_Live:BGB_Dead, names_to = "Biomass_Category", values_to = "Biomass")
 
 # view first 6 rows of a dataframe
 head(biomass_tidy)
@@ -80,7 +81,8 @@ biomass_tidy$Biomass_Category
 biomass_tidy[,4:5]
 
 # combine two columns
-biomass_unite <- biomass_tidy %>% unite("Datetime", Date:Time, sep = " ", remove = T)
+biomass_unite <- biomass_tidy %>% 
+  unite("Datetime", Date:Time, sep = " ", remove = T)
 
 # working with dates
 class(biomass_unite$Datetime)
@@ -89,7 +91,8 @@ biomass_unite$Datetime <- mdy_hm(biomass_unite$Datetime)
 biomass_unite$Year <- year(biomass_unite$Datetime)
 
 # separate two columns
-biomass_sep <- biomass_unite %>% separate(Datetime, c("Date", "Time"), sep = " ")
+biomass_sep <- biomass_unite %>% 
+  separate(Datetime, c("Date", "Time"), sep = " ")
 
 # rename all columns
 names(biomass_tidy) <- c("Date", "Time", "Site", "Plot", "Subplot", "Biomass_Category", "Biomass")
@@ -101,28 +104,40 @@ names(biomass_tidy)[names(biomass_tidy) == 'Subplot'] <- "Random_Subplot"
 biomass_tidy$Biomass_Category[biomass_tidy$Biomass_Category == "BGB_Dead"] <- "Dead BGB"
 
 # summarize the data
-biomass_summary <- biomass_tidy %>% group_by(Site, Biomass_Category) %>% summarize(Biomass_avg = mean(Biomass),
-                                                                               Biomass_sd = sd(Biomass))
-biomass_total <- biomass_tidy %>% group_by(Site, Plot) %>% summarize(Biomass_total = sum(Biomass))
+biomass_summary <- biomass_tidy %>% 
+  group_by(Site, Biomass_Category) %>% 
+  summarize(Biomass_avg = mean(Biomass),
+            Biomass_sd = sd(Biomass))
+
+biomass_total <- biomass_tidy %>% 
+  group_by(Site, Plot) %>% 
+  summarize(Biomass_total = sum(Biomass))
 
 # filter data based on a set of criteria
-biomass_filter <- biomass_tidy %>% filter(Biomass_Category == "AGB_Live")
-biomass_filter <- biomass_tidy %>% filter(Biomass > 100)
+biomass_filter <- biomass_tidy %>% 
+  filter(Biomass_Category == "AGB_Live")
+
+biomass_filter <- biomass_tidy %>% 
+  filter(Biomass > 100)
 
 # use "&" to filter by two criteria - results will have rows that meet BOTH
-biomass_filter <- biomass_tidy %>% filter(Biomass_Category == "AGB_Live" & Biomass > 100)
+biomass_filter <- biomass_tidy %>% 
+  filter(Biomass_Category == "AGB_Live" & Biomass > 100)
 
 # use "|" to filter by two criteria - results will have rows that meet EITHER
-biomass_filter <- biomass_tidy %>% filter(Biomass_Category == "AGB_Live" | Biomass_Category == "AGB_Dead")
+biomass_filter <- biomass_tidy %>% 
+  filter(Biomass_Category == "AGB_Live" | Biomass_Category == "AGB_Dead")
 
 # find specific rows that meet criteria
 which(biomass_tidy$Plot == 12)
 
 # select specific columns
-biomass_sel <- biomass_tidy %>% select(Site, Plot, Biomass_Category, Biomass)
+biomass_sel <- biomass_tidy %>% 
+  select(Site, Plot, Biomass_Category, Biomass)
 
 # or use "!" to remove specific columns
-biomass_sel <- biomass_tidy %>% select(!Random_Subplot)
+biomass_sel <- biomass_tidy %>% 
+  select(!Random_Subplot)
 
 # write new file to working directory
 write.csv(biomass_tidy, "biomass_tidy.csv", row.names = FALSE)
